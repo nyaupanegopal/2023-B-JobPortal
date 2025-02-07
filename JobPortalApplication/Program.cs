@@ -6,7 +6,7 @@ namespace JobPortalApplication
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,7 @@ namespace JobPortalApplication
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
@@ -46,7 +47,25 @@ namespace JobPortalApplication
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            // Ensure roles are created at startup
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await SeedRoles(roleManager); // Calls function to create roles if they don�t exist
+            }
             app.Run();
+        }
+        // Function to create roles if they do not exist
+        private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            string[] roles = { "Admin", "Employer","Candidate" };
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
         }
     }
 }

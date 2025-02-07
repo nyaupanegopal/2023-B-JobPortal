@@ -1,5 +1,6 @@
 ﻿using JobPortalApplication.Data; // Importing the application's database context
 using JobPortalApplication.Models; // Importing the application's models
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; // Importing ASP.NET Core MVC functionalities
 using System.ComponentModel.DataAnnotations; // Importing validation attributes
 
@@ -54,6 +55,8 @@ namespace JobPortalApplication.Controllers
         /// Displays a list of all job details
         /// </summary>
         /// <returns>View with a list of job details</returns>
+        /// 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var listdata = _context.JobDetails.ToList(); // Retrieves all job details from the database
