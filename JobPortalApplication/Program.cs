@@ -1,4 +1,5 @@
 using JobPortalApplication.Data;
+using JobPortalApplication.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ namespace JobPortalApplication
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddScoped<UserManagementService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

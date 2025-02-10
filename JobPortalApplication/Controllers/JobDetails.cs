@@ -1,5 +1,6 @@
 ﻿using JobPortalApplication.Data; // Importing the application's database context
 using JobPortalApplication.Models; // Importing the application's models
+using JobPortalApplication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; // Importing ASP.NET Core MVC functionalities
 using System.ComponentModel.DataAnnotations; // Importing validation attributes
@@ -11,15 +12,18 @@ namespace JobPortalApplication.Controllers
     /// </summary>
     public class JobDetailsController : Controller
     {
+        private readonly UserManagementService _userManagementService;
         private readonly ApplicationDbContext _context; // Database context to interact with the database
 
         /// <summary>
         /// Constructor to initialize the database context
         /// </summary>
         /// <param name="context">Application database context</param>
-        public JobDetailsController(ApplicationDbContext context)
+        public JobDetailsController(ApplicationDbContext context, UserManagementService ser
+            )
         {
             _context = context;
+            _userManagementService = ser;
         }
 
         /// <summary>
@@ -59,6 +63,7 @@ namespace JobPortalApplication.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+            var listrole = _userManagementService.GetAllRolesAsync();
             var listdata = _context.JobDetails.ToList(); // Retrieves all job details from the database
             return View(listdata); // Passes data to the view
         }

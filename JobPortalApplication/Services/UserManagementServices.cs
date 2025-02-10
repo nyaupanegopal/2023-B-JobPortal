@@ -7,94 +7,55 @@ using System.Threading.Tasks;
 
 namespace JobPortalApplication.Services
 {
-    public class UserManagementServices
+    public class UserManagementService
     {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserManagementService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
-
-    /// <summary>
-    /// Create a new user and assign a role
-    /// </summary>
-    public async Task<(bool Success, string Message, ApplicationUser User)> CreateUserAsync(string email, string password, string phoneNumber, string roleName)
-    {
-        var user = new ApplicationUser
+        public UserManagementService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            UserName = email,
-            Email = email,
-            PhoneNumber = phoneNumber
-        };
-
-        var result = await _userManager.CreateAsync(user, password);
-        if (!result.Succeeded)
-        {
-            return (false, string.Join("; ", result.Errors.Select(e => e.Description)), null);
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        // Assign role
-        var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (!roleExists)
+        public async Task<IdentityUser> GetUserByIdAsync(string userId)
         {
-            await _roleManager.CreateAsync(new IdentityRole(roleName));
+            return await _userManager.FindByIdAsync(userId);
         }
 
-        await _userManager.AddToRoleAsync(user, roleName);
-        return (true, "User created successfully", user);
-    }
-
-    /// <summary>
-    /// Get a user by their ID
-    /// </summary>
-    public async Task<ApplicationUser> GetUserByIdAsync(string userId)
-    {
-        return await _userManager.FindByIdAsync(userId);
-    }
-
-    /// <summary>
-    /// Assign an existing user to a role
-    /// </summary>
-    public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-            return false;
-
-        var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (!roleExists)
-            await _roleManager.CreateAsync(new IdentityRole(roleName));
-
-        var result = await _userManager.AddToRoleAsync(user, roleName);
-        return result.Succeeded;
-    }
-
-    /// <summary>
-    /// Get all users by role as SelectListItem for dropdowns
-    /// </summary>
-    public async Task<List<SelectListItem>> GetUsersByRoleAsync(string roleName)
-    {
-        var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
-        return usersInRole.Select(u => new SelectListItem
+        public async Task<List<SelectListItem>> GetAllUsersAsync()
         {
-            Value = u.Id,
-            Text = u.Email
-        }).ToList();
+            var users = _userManager.Users.ToList();
+            return users.Select(u => new SelectListItem { Value = u.Id, Text = u.UserName }).ToList();
+        }
+
+        public async Task<bool> CreateUserAsync(string email, string password)
+        {
+            var user = new IdentityUser { UserName = email, Email = email };
+            var result = await _userManager.CreateAsync(user, password);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            return result.Succeeded;
+        }
+
+        public async Task<List<SelectListItem>> GetAllRolesAsync()
+        {
+            var roles = _roleManager.Roles.ToList();
+            return roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
+        }
     }
 
-    /// <summary>
-    /// Get all roles as SelectListItem for dropdowns
-    /// </summary>
-    public async Task<List<SelectListItem>> GetAllRolesAsync()
-    {
-        var roles = await _roleManager.Roles.ToListAsync();
-        return roles.Select(r => new SelectListItem
-        {
-            Value = r.Name,
-            Text = r.Name
-        }).ToList();
-    }
 }
