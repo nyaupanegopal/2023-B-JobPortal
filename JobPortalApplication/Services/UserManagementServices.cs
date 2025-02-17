@@ -29,11 +29,11 @@ namespace JobPortalApplication.Services
             return users.Select(u => new SelectListItem { Value = u.Id, Text = u.UserName }).ToList();
         }
 
-        public async Task<bool> CreateUserAsync(string email, string password)
+        public async Task<IdentityResult> CreateUserAsync(string email, string password)
         {
             var user = new IdentityUser { UserName = email, Email = email };
             var result = await _userManager.CreateAsync(user, password);
-            return result.Succeeded;
+            return result;
         }
 
         public async Task<bool> AddUserToRoleAsync(string userId, string roleName)

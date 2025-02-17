@@ -7,28 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JobPortalApplication.Data;
 using JobPortalApplication.Models;
-using JobPortalApplication.Services;
 
 namespace JobPortalApplication.Controllers
 {
-    public class EmployerDetailsController : Controller
+    public class EducationalQualificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManagementService _userManagementService;
-        public EmployerDetailsController(ApplicationDbContext context, UserManagementService userManagementService)
+
+        public EducationalQualificationsController(ApplicationDbContext context)
         {
             _context = context;
-            _userManagementService = userManagementService;
         }
 
-        // GET: EmployerDetails
+        // GET: EducationalQualifications
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.EmployerDetails.Include(e => e.IdentityUser);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.EducationalQualification.ToListAsync());
         }
 
-        // GET: EmployerDetails/Details/5
+        // GET: EducationalQualifications/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -36,44 +33,39 @@ namespace JobPortalApplication.Controllers
                 return NotFound();
             }
 
-            var employerDetails = await _context.EmployerDetails
-                .Include(e => e.IdentityUser)
+            var educationalQualification = await _context.EducationalQualification
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (employerDetails == null)
+            if (educationalQualification == null)
             {
                 return NotFound();
             }
 
-            return View(employerDetails);
+            return View(educationalQualification);
         }
 
-        // GET: EmployerDetails/Create
+        // GET: EducationalQualifications/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName");
             return View();
         }
 
-        // POST: EmployerDetails/Create
+        // POST: EducationalQualifications/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Phone,PrimaryContactPerson,Email")] EmployerDetails employerDetails)
+        public async Task<IActionResult> Create([Bind("Id,Level,Board")] EducationalQualification educationalQualification)
         {
             if (ModelState.IsValid)
             {
-                var userdetails=_userManagementService.CreateUserAsync(employerDetails.Email, "Employer");
-                //employerDetails.UserId = userdetails.Id;
-                _context.Add(employerDetails);
+                _context.Add(educationalQualification);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", employerDetails.UserId);
-            return View(employerDetails);
+            return View(educationalQualification);
         }
 
-        // GET: EmployerDetails/Edit/5
+        // GET: EducationalQualifications/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,23 +73,22 @@ namespace JobPortalApplication.Controllers
                 return NotFound();
             }
 
-            var employerDetails = await _context.EmployerDetails.FindAsync(id);
-            if (employerDetails == null)
+            var educationalQualification = await _context.EducationalQualification.FindAsync(id);
+            if (educationalQualification == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", employerDetails.UserId);
-            return View(employerDetails);
+            return View(educationalQualification);
         }
 
-        // POST: EmployerDetails/Edit/5
+        // POST: EducationalQualifications/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Phone,PrimaryContactPerson,Email,UserId")] EmployerDetails employerDetails)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Level,Board")] EducationalQualification educationalQualification)
         {
-            if (id != employerDetails.Id)
+            if (id != educationalQualification.Id)
             {
                 return NotFound();
             }
@@ -106,12 +97,12 @@ namespace JobPortalApplication.Controllers
             {
                 try
                 {
-                    _context.Update(employerDetails);
+                    _context.Update(educationalQualification);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployerDetailsExists(employerDetails.Id))
+                    if (!EducationalQualificationExists(educationalQualification.Id))
                     {
                         return NotFound();
                     }
@@ -122,11 +113,10 @@ namespace JobPortalApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", employerDetails.UserId);
-            return View(employerDetails);
+            return View(educationalQualification);
         }
 
-        // GET: EmployerDetails/Delete/5
+        // GET: EducationalQualifications/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,35 +124,34 @@ namespace JobPortalApplication.Controllers
                 return NotFound();
             }
 
-            var employerDetails = await _context.EmployerDetails
-                .Include(e => e.IdentityUser)
+            var educationalQualification = await _context.EducationalQualification
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (employerDetails == null)
+            if (educationalQualification == null)
             {
                 return NotFound();
             }
 
-            return View(employerDetails);
+            return View(educationalQualification);
         }
 
-        // POST: EmployerDetails/Delete/5
+        // POST: EducationalQualifications/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employerDetails = await _context.EmployerDetails.FindAsync(id);
-            if (employerDetails != null)
+            var educationalQualification = await _context.EducationalQualification.FindAsync(id);
+            if (educationalQualification != null)
             {
-                _context.EmployerDetails.Remove(employerDetails);
+                _context.EducationalQualification.Remove(educationalQualification);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployerDetailsExists(int id)
+        private bool EducationalQualificationExists(int id)
         {
-            return _context.EmployerDetails.Any(e => e.Id == id);
+            return _context.EducationalQualification.Any(e => e.Id == id);
         }
     }
 }

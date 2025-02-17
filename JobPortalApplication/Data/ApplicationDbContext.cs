@@ -16,5 +16,7 @@ namespace JobPortalApplication.Data
         public DbSet<JobDetailsDto> JobDetails { get; set; }
         public DbSet<EmployerDetails> EmployerDetails { get; set; }
         public DbSet<JobCategory> JobCategory { get; set; }
+        public DbSet<JobType> JobType { get; set; }
+        public DbSet<EducationalQualification> EducationalQualification { get; set; }
     }
 }
