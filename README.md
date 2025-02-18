@@ -16,7 +16,7 @@ This is the admin panel for handling job postings, employer management, and rela
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-repo/job-portal-admin.git
+    git clone https://github.com/nyaupanegopal/2023-B-JobPortal.git
     cd job-portal-admin
     ```
 2. Set up the database:
@@ -40,7 +40,7 @@ The system automatically seeds default roles and an admin user during the first 
 
 ## Usage
 
-- Access the panel at `https://localhost:5001`
+- Access the panel at `[https://localhost:5001](https://localhost:7078)`
 - Login with admin credentials to manage jobs and employers.
 
 ## Contributing
