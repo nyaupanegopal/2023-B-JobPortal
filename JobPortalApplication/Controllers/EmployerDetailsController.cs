@@ -61,16 +61,14 @@ namespace JobPortalApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Address,Phone,PrimaryContactPerson,Email")] EmployerDetails employerDetails)
         {
-            if (ModelState.IsValid)
-            {
+            
                 var userdetails=_userManagementService.CreateUserAsync(employerDetails.Email, "Employer");
                 //employerDetails.UserId = userdetails.Id;
                 _context.Add(employerDetails);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", employerDetails.UserId);
-            return View(employerDetails);
+            
+           
         }
 
         // GET: EmployerDetails/Edit/5

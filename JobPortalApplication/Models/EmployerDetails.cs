@@ -14,8 +14,8 @@ namespace JobPortalApplication.Models
         public string Phone { get; set; }
         public string PrimaryContactPerson { get; set; }
         public string Email { get; set; }
-        public string UserId { get; set; }
-        [ForeignKey("UserId")]
+        public string? UserId { get; set; }
+        
         public virtual IdentityUser IdentityUser { get; set; }
     }
 }

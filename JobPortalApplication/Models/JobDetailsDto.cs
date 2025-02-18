@@ -18,7 +18,7 @@ namespace JobPortalApplication.Models
         public string JobLevel { get; set; }
         public string JobLocation { get; set; }
         public string OfferedSalary { get; set; }
-        public string DeadLine { get; set; }
+        public DateTime DeadLine { get; set; }
         public string EducationLevel { get; set; }
         public string ExperienceRequired { get; set; }
         public string OtherSpecification { get; set; }

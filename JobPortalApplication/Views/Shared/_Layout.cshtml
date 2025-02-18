@@ -1,4 +1,14 @@
-﻿@*<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = user != null ? await UserManager.GetRolesAsync(user) : new List<string>();
+    var userRole = roles.FirstOrDefault() ?? "No Role Assigned";
+}
+
+
+@*<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -120,8 +130,8 @@
                                 <!--change to offline or busy as needed-->
                             </div>
                             <div class="nav-profile-text d-flex flex-column">
-                                <span class="font-weight-bold mb-2">Sujan</span>
-                                <span class="text-secondary text-small">Softwaare Developer</span>
+                                <span class="font-weight-bold mb-2">@user.UserName</span>
+                                <span class="text-secondary text-small">@userRole</span>
                             </div>
                             <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                         </a>
@@ -161,6 +171,12 @@
                         <a class="nav-link" asp-area="" asp-controller="JobDetailsDtoes" asp-action="Index">
                             <span class="menu-title">Job Details</span>
                             <i class="mdi mdi-briefcase menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">
+                            <span class="menu-title">User Register</span>
+                            <i class="mdi mdi-account-plus menu-icon"></i>
                         </a>
                     </li>
                 </ul>

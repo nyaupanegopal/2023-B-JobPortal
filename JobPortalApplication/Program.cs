@@ -2,6 +2,7 @@ using JobPortalApplication.Data;
 using JobPortalApplication.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JobPortalApplication
 {
@@ -20,8 +21,10 @@ namespace JobPortalApplication
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<UserManagementService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,7 +35,6 @@ namespace JobPortalApplication
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -40,7 +42,6 @@ namespace JobPortalApplication
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -48,25 +49,24 @@ namespace JobPortalApplication
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            // Ensure roles are created at startup
+            // Ensure roles and admin user are created at startup
             using (var scope = app.Services.CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                await SeedRoles(roleManager); // Calls function to create roles if they don�t exist
+                var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
+                // Apply any pending migrations automatically
+                dbContext.Database.Migrate();
+
+                // Seed roles and admin user
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+                await DataSeeder.SeedRoles(roleManager);
+                await DataSeeder.SeedAdminUser(userManager);
             }
+
             app.Run();
-        }
-        // Function to create roles if they do not exist
-        private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
-        {
-            string[] roles = { "Admin", "Employer","Candidate" };
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
-            }
         }
     }
 }

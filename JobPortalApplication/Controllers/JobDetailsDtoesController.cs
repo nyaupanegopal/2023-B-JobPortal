@@ -63,16 +63,11 @@ namespace JobPortalApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,JobTitle,ComapnayId,CategoryId,JobTypeId,VacancyNo,JobLevel,JobLocation,OfferedSalary,DeadLine,EducationLevel,ExperienceRequired,OtherSpecification,JobWorkDescription")] JobDetailsDto jobDetailsDto)
         {
-            if (ModelState.IsValid)
-            {
+            
                 _context.Add(jobDetailsDto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["ComapnayId"] = new SelectList(_context.EmployerDetails, "Id", "Name", jobDetailsDto.ComapnayId);
-            ViewData["CategoryId"] = new SelectList(_context.JobCategory, "Id", "Name", jobDetailsDto.CategoryId);
-            ViewData["JobTypeId"] = new SelectList(_context.JobType, "Id", "Name", jobDetailsDto.JobTypeId);
-            return View(jobDetailsDto);
+           
         }
 
         // GET: JobDetailsDtoes/Edit/5
