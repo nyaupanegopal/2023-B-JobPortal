@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JobPortalApplication.Data;
 using JobPortalApplication.Models;
+using NuGet.Packaging;
 
 namespace JobPortalApplication.Controllers
 {
